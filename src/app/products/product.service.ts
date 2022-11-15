@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, tap, throwError } from 'rxjs';
 
 import { Product } from './product';
 
@@ -16,8 +16,11 @@ export class ProductService {
   // remove the method getProducts()
   // we define a property for the products observable
   // convention: any property referencing and observable end with $
-  products$ = this.http.get<Product[]>(this.productsUrl)
+  products$ = this.http.get<Product[]>(this.productsUrl)                  // http.get returns an array of Products
   .pipe(
+    // use the map operator to multiply each product's price by 1.5
+    //map(item => item.price*1.5),
+    map(products => products),
     tap(data => console.log('Products: ', JSON.stringify(data))),
     catchError(this.handleError)      // we call the handleError method
   );
