@@ -12,16 +12,26 @@ export class ProductService {
   private productsUrl = 'api/products';
   private suppliersUrl = 'api/suppliers';
 
+  // using Declarative Pattern for Data Retrieval
+  // remove the method getProducts()
+  // we define a property for the products observable
+  // convention: any property referencing and observable end with $
+  products$ = this.http.get<Product[]>(this.productsUrl)
+  .pipe(
+    tap(data => console.log('Products: ', JSON.stringify(data))),
+    catchError(this.handleError)      // we call the handleError method
+  );
+
   constructor(private http: HttpClient) { }
 
   // method getProducts return an Observable of type "Product"
-  getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.productsUrl)
-      .pipe(
-        tap(data => console.log('Products: ', JSON.stringify(data))),
-        catchError(this.handleError)      // we call the handleError method
-      );
-  }
+  // getProducts(): Observable<Product[]> {
+  //   return this.http.get<Product[]>(this.productsUrl)
+  //     .pipe(
+  //       tap(data => console.log('Products: ', JSON.stringify(data))),
+  //       catchError(this.handleError)      // we call the handleError method
+  //     );
+  // }
 
   private fakeProduct(): Product {
     return {

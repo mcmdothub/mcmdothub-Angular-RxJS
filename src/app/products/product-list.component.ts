@@ -11,7 +11,7 @@ import { ProductService } from './product.service';
   styleUrls: ['./product-list.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush       // we set the change detection strategy here in the Component decorator
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent {
   pageTitle = 'Product List';
   errorMessage = '';
   categories: ProductCategory[] = [];
@@ -20,36 +20,47 @@ export class ProductListComponent implements OnInit {
   // Implement Async Pipe
   // $ indicates that is an Observable and not a simple Array
   // undefiend means we dont need to initialize it
-  products$: Observable<Product[]> | undefined;
+  //products$: Observable<Product[]> | undefined;
+
+  // using Declarative Pattern for Data Retrieval
+  products$ = this.productService.products$
+    .pipe(
+      catchError(err => {
+        this.errorMessage = err;
+        return EMPTY;
+      })
+    );
+
 
   //sub!: Subscription;
 
   constructor(private productService: ProductService) { }
 
-  ngOnInit(): void {
+  // After using Declarative Pattern for Data Retrieval we dont need ngOnInit anymore
+  //ngOnInit(): void {
     // this.sub = this.productService.getProducts()
     //   .subscribe({
     //     next: products => this.products = products,
     //     error: err => this.errorMessage = err
     //   });
     // Implement Async Pipe
-    this.products$ = this.productService.getProducts()
+    //this.products$ = this.productService.getProducts()
     // we want to catch any errors thrown from the service so we pipe the observable through the catchError operator function
-    .pipe(
+    //.pipe(
       // catchError takes in the error: err
       // we'll assign any returned error message to our errorMessage property
-      catchError(err => {
-        this.errorMessage = err;      // catch the error and assign the error message
+      //catchError(err => {
+        //this.errorMessage = err;      // catch the error and assign the error message
         // replace the observable with a new one
         // if we have an error => we have no products so we could return an observable that emits an empty array "of([])"
         //return of([]);
-        return EMPTY;                 // alternative we can use the empty RxJs constant
+        //return EMPTY;                 // alternative we can use the empty RxJs constant
         // in "product.service" if you delete an s from productsUrl = 'api/products'
         // console will return an error: "error:"Collection 'product' not found"" => our handle errors works
         // even UI will return an error: "Backend returned code 404: undefined"
-      })
-    )
-  }
+      //})
+    //)
+  //}
 
   // ngOnDestroy(): void {
   //   this.sub.unsubscribe();
