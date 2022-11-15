@@ -20,7 +20,21 @@ export class ProductService {
   .pipe(
     // use the map operator to multiply each product's price by 1.5
     //map(item => item.price*1.5),
-    map(products => products),
+    map(products =>
+      // we use product's array map method to access each array element
+     products.map(product => ({
+      // spread operator "...product" to copy the product properties and values ( properties that we want to keep as original)
+      // spread replace all this:
+      // id: product.id,
+      // productName: product.productName,
+      // productCode: productCode:
+      // description: product.description,
+      ...product,
+      // we need to handle the possibillíty of null or undefined price
+      // will do that with a conditional operator: if the product price has a value you multiply otherwise return 0
+      price: product.price ? product.price * 1.5 : 0,
+      searchKey: [product.productName]
+     } as Product))),             // we add as Product to cast a new object literal to the product type
     tap(data => console.log('Products: ', JSON.stringify(data))),
     catchError(this.handleError)      // we call the handleError method
   );
