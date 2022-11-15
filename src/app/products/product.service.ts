@@ -11,7 +11,7 @@ import { Product } from './product';
 export class ProductService {
   private productsUrl = 'api/products';
   private suppliersUrl = 'api/suppliers';
-  
+
   constructor(private http: HttpClient) { }
 
   // method getProducts return an Observable of type "Product"
@@ -19,7 +19,7 @@ export class ProductService {
     return this.http.get<Product[]>(this.productsUrl)
       .pipe(
         tap(data => console.log('Products: ', JSON.stringify(data))),
-        catchError(this.handleError)
+        catchError(this.handleError)      // we call the handleError method
       );
   }
 
@@ -36,6 +36,7 @@ export class ProductService {
     };
   }
 
+  // inside hendleError method we build a custom error message
   private handleError(err: HttpErrorResponse): Observable<never> {
     // in a real world app, we may send the server to some remote logging infrastructure
     // instead of just logging it to the console
@@ -49,6 +50,8 @@ export class ProductService {
       errorMessage = `Backend returned code ${err.status}: ${err.message}`;
     }
     console.error(err);
+
+    // we use throw to throw the error to the subscriber(in our case our component)
     return throwError(() => errorMessage);
   }
 

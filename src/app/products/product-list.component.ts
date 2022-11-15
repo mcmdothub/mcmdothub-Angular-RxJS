@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { Observable } from 'rxjs';
+import { catchError, EMPTY, Observable, of } from 'rxjs';
 import { ProductCategory } from '../product-categories/product-category';
 
 import { Product } from './product';
@@ -32,7 +32,22 @@ export class ProductListComponent implements OnInit {
     //     error: err => this.errorMessage = err
     //   });
     // Implement Async Pipe
-    this.products$ = this.productService.getProducts();
+    this.products$ = this.productService.getProducts()
+    // we want to catch any errors thrown from the service so we pipe the observable through the catchError operator function
+    .pipe(
+      // catchError takes in the error: err
+      // we'll assign any returned error message to our errorMessage property
+      catchError(err => {
+        this.errorMessage = err;      // catch the error and assign the error message
+        // replace the observable with a new one
+        // if we have an error => we have no products so we could return an observable that emits an empty array "of([])"
+        //return of([]);
+        return EMPTY;                 // alternative we can use the empty RxJs constant
+        // in "product.service" if you delete an s from productsUrl = 'api/products'
+        // console will return an error: "error:"Collection 'product' not found"" => our handle errors works
+        // even UI will return an error: "Backend returned code 404: undefined"
+      })
+    )
   }
 
   // ngOnDestroy(): void {
