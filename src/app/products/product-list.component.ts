@@ -23,7 +23,16 @@ export class ProductListComponent {
   //products$: Observable<Product[]> | undefined;
 
   // using Declarative Pattern for Data Retrieval
-  products$ = this.productService.products$
+  // products$ = this.productService.products$
+  //   .pipe(
+  //     catchError(err => {
+  //       this.errorMessage = err;
+  //       return EMPTY;
+  //     })
+  //   );
+
+  // productsWithCategory provids the same array of products but with extra category property
+  products$ = this.productService.productsWithCategory$
     .pipe(
       catchError(err => {
         this.errorMessage = err;

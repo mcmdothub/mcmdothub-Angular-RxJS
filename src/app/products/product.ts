@@ -6,6 +6,7 @@ export interface Product {
   description?: string;
   price?: number;
   categoryId?: number;
+  category?: string,              // property for category Name and make it optional "?" since it won't populate until we map it
   quantityInStock?: number;
   searchKey?: string[];
   supplierIds?: number[];

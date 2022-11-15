@@ -29,7 +29,7 @@
       <!-- After using Observable property indicated with $-->
       <!-- we pipe it throught the async pipe to access its emitted values -->
       <!-- this automatically subcribes for us and handles unsubscribing -->
-      <!-- So: products$ is the observable and products is the array of products 
+      <!-- So: products$ is the observable and products is the array of products
       emited from that observable -->
       <table class="table mb-0"
              *ngIf="products$ | async as products">
@@ -46,7 +46,9 @@
           <tr *ngFor="let product of products">
             <td>{{ product.productName }}</td>
             <td>{{ product.productCode }}</td>
-            <td>{{ product.categoryId }}</td>
+            <!-- <td>{{ product.categoryId }}</td> -->
+            <!-- We display Category property instead of the Id -->
+            <td>{{ product.category }}</td>
             <td>{{ product.price | currency:"USD":"symbol":"1.2-2" }}</td>
             <td>{{ product.quantityInStock }}</td>
           </tr>
