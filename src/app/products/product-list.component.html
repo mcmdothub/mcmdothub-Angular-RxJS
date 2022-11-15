@@ -23,8 +23,16 @@
     </div>
 
     <div class="table-responsive">
+      <!-- <table class="table mb-0"
+             *ngIf="products"> -->
+      <!-- Implement Async Pipe -->
+      <!-- After using Observable property indicated with $-->
+      <!-- we pipe it throught the async pipe to access its emitted values -->
+      <!-- this automatically subcribes for us and handles unsubscribing -->
+      <!-- So: products$ is the observable and products is the array of products 
+      emited from that observable -->
       <table class="table mb-0"
-             *ngIf="products">
+             *ngIf="products$ | async as products">
         <thead>
           <tr>
             <th>Product</th>

@@ -2,7 +2,7 @@
 export interface Product {
   id: number;
   productName: string;
-  productCode?: string;
+  productCode?: string;           // "?"" may or not exist in the retrieve data = nullable fields
   description?: string;
   price?: number;
   categoryId?: number;
