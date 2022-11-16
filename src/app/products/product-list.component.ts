@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
-import { catchError, combineLatest, EMPTY, filter, map, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, EMPTY, filter, map, Observable, of, startWith, Subject } from 'rxjs';
 import { ProductCategory } from '../product-categories/product-category';
 import { ProductCategoryService } from '../product-categories/product-category.service';
 
@@ -23,7 +23,10 @@ export class ProductListComponent {
   // that ID is a number so we create a new subject of number
   // mo other code should use this subject so we define it as private
   // private is not obligatory because we declare it inside a component and not a service but is helpful to follow the same pattern when creating a subject
-  private categorySelectedSubject = new Subject<number>();
+  //private categorySelectedSubject = new Subject<number>();
+
+  // this is the second solution for setting the default value for drop-down using BahaviorSubject
+  private categorySelectedSubject = new BehaviorSubject<number>(0);
 
   // then we expose the subject's observable using asObservable
   categorySelectedAction$ = this.categorySelectedSubject.asObservable();
@@ -34,6 +37,12 @@ export class ProductListComponent {
   products$ = combineLatest([
     this.productService.productsWithCategory$,      // stream1(emits the array of products inside map): we use productsWithCategory because we want to display the category string not the ID
     this.categorySelectedAction$                    // stream2(emits the selectedCategoryId every time the user select a category from the drop-down): we specify our newly created action stream
+    // one way to select default value for drop-down is pipe, second way is using BahaviorSubject
+    //.pipe(
+      // we pipe our action stream through the startWith operator with the value of 0
+      // now the default drop-down is set to 0: display all
+      //startWith(0)
+    //)
   ])
   .pipe(
     // inside the pipe line we perform our filter
