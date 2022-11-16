@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
-import { catchError, EMPTY, filter, map, Observable, of } from 'rxjs';
+import { catchError, combineLatest, EMPTY, filter, map, Observable, of, Subject } from 'rxjs';
 import { ProductCategory } from '../product-categories/product-category';
 import { ProductCategoryService } from '../product-categories/product-category.service';
 
@@ -16,11 +16,39 @@ export class ProductListComponent {
   pageTitle = 'Product List';
   errorMessage = '';
 
-  //local categories property
-  //categories: ProductCategory[] = [];
+  // Implementing Reacting to Actions
+  // Follow 3 steps
+  // 1. Create an action stream
+  // we want the action stream to emit the selectedCategoryId every time the user selects the category
+  // that ID is a number so we create a new subject of number
+  // mo other code should use this subject so we define it as private
+  // private is not obligatory because we declare it inside a component and not a service but is helpful to follow the same pattern when creating a subject
+  private categorySelectedSubject = new Subject<number>();
 
-  // hardcode a default category selection
-  selectedCategoryId = 1;
+  // then we expose the subject's observable using asObservable
+  categorySelectedAction$ = this.categorySelectedSubject.asObservable();
+
+  // 2. next step to combine the action stream with our data stream
+  // instead of setting products$ to just the data stream
+  // we set it to the combination of the data stream and action stream
+  products$ = combineLatest([
+    this.productService.productsWithCategory$,      // stream1(emits the array of products inside map): we use productsWithCategory because we want to display the category string not the ID
+    this.categorySelectedAction$                    // stream2(emits the selectedCategoryId every time the user select a category from the drop-down): we specify our newly created action stream
+  ])
+  .pipe(
+    // inside the pipe line we perform our filter
+    // we first destructure the array elements [products, selectedCategoryId] emitted from combineLatest
+    map(([products, selectedCategoryId]) =>
+    // then use the products array filter method to filter our list
+      products.filter(product => selectedCategoryId ? product.categoryId === selectedCategoryId : true)
+    ),
+    catchError(err => {
+      this.errorMessage = err;
+      return EMPTY;
+    })
+  );
+
+  //selectedCategoryId = 1;
 
   //products: Product[] = [];
   // Implement Async Pipe
@@ -38,13 +66,13 @@ export class ProductListComponent {
   //   );
 
   // productsWithCategory provids the same array of products but with extra category property
-  products$ = this.productService.productsWithCategory$
-    .pipe(
-      catchError(err => {
-        this.errorMessage = err;
-        return EMPTY;
-      })
-    );
+  // products$ = this.productService.productsWithCategory$
+  //   .pipe(
+  //     catchError(err => {
+  //       this.errorMessage = err;
+  //       return EMPTY;
+  //     })
+  //   );
 
   // property for the product category data stream
   // we assign it to the productCategories Observable defined in the productCategoryService & include exception handling
@@ -57,19 +85,21 @@ export class ProductListComponent {
     );
 
   // new Observable for our filtered list
-  productsSimpleFilter$ = this.productService.productsWithCategory$
-    .pipe(
+  //productsSimpleFilter$ = this.productService.productsWithCategory$
+    //.pipe(
       // map operator to map the emitted array
-      map(products =>
+      //map(products =>
         // use the array's filter method to filter the elements in this array
         // returns only those products with the selected category ID
-        products.filter(product =>
+        //products.filter(product =>
           // if ? there is a selectedCategoryId we check the product.categoryId against the selectedCategoryId
           // otherwise there is no selectedCategoryId  we return true to select all products
-          this.selectedCategoryId ? product.categoryId === this.selectedCategoryId : true
-          )
-        )
-    );
+          //this.selectedCategoryId ? product.categoryId === this.selectedCategoryId : true
+          //)
+        //)
+    //);
+
+  // Implementing Reacting to Actions
 
 
   //sub!: Subscription;
@@ -112,10 +142,20 @@ export class ProductListComponent {
     console.log('Not yet implemented');
   }
 
-  onSelected(categoryId: string): void {
+  //onSelected(categoryId: string): void {
     // we set the selectedCategoryId to the ID that user selected
     // we use + to cast it to a number.The + is required or "===" in the filter function won't match our value
-    this.selectedCategoryId = + categoryId;
-    console.log('Product-category.service => onSelected method:', this.selectedCategoryId);
+    //this.selectedCategoryId = + categoryId;
+    //console.log('Product-category.service => onSelected method:', this.selectedCategoryId);
+  //}
+
+  // Implementing Reacting to Actions
+
+  // 3. last step is to emit a value to the action stream every time an action occurs
+  // onSelected method is called every time the user selected an item from the category drop-down
+  onSelected(categoryId: string): void {
+    // we use the subject's next method to emit the selectedCategoryId to the stream
+    // add the + to cast the ID (which is string) to a number
+    this.categorySelectedSubject.next(+categoryId);
   }
 }

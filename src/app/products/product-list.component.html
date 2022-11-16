@@ -39,8 +39,11 @@
       <!-- <table class="table mb-0"
              *ngIf="products$ | async as products"> -->
       <!-- we bind to the filter productsSimpleFilter -->
+      <!-- <table class="table mb-0"
+             *ngIf="productsSimpleFilter$ | async as products"> -->
+      <!-- Change it to products$ observable for implementing Reacting to Actions-->
       <table class="table mb-0"
-             *ngIf="productsSimpleFilter$ | async as products">
+             *ngIf="products$ | async as products">
         <thead>
           <tr>
             <th>Product</th>
