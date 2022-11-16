@@ -18,7 +18,16 @@ export class ProductListAltComponent {
   // sub!: Subscription;
 
   // using Declarative Pattern for Data Retrieval
-  products$ = this.productService.products$
+  // products$ = this.productService.products$
+  //   .pipe(
+  //     catchError(err => {
+  //       this.errorMessage = err;
+  //       return EMPTY;
+  //     })
+  //   );
+
+  // we use productsWithCategory$ observable so we have the category IDs mapped to the category strings
+  products$ = this.productService.productsWithCategory$
     .pipe(
       catchError(err => {
         this.errorMessage = err;

@@ -8,12 +8,20 @@
   <div class="card-body"
   *ngIf="products$ | async as products">
     <div class="list-group">
-      <button type="button"
+      <!-- <button type="button"
               class="list-group-item"
               *ngFor="let product of products"
               [ngClass]="{ active: product?.id === selectedProductId }"
               (click)="onSelected(product.id)">
         {{ product.productName }} ({{ product.categoryId }})
+      </button> -->
+      <!-- After using productsWithCategory$ observable we bind to category name and not categoryId anymore -->
+      <button type="button"
+              class="list-group-item"
+              *ngFor="let product of products"
+              [ngClass]="{ active: product?.id === selectedProductId }"
+              (click)="onSelected(product.id)">
+        {{ product.productName }} ({{ product.category }})
       </button>
     </div>
   </div>

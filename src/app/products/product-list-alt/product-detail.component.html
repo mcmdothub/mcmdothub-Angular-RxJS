@@ -1,5 +1,9 @@
+<!-- <div class="card"
+     *ngIf="product"> -->
+<!-- Now we bind to the product$ stream using an async pipe -->
+<!-- We use the as clause to emit the value into a variable we can use throughout the template-->
 <div class="card"
-     *ngIf="product">
+     *ngIf="product$ | async as product">
   <div class="card-header">
     {{ pageTitle }}
   </div>

@@ -65,6 +65,18 @@ export class ProductService {
     )
   );
 
+  // Lets define a stream that returns a single product from our existing observable
+  // we call the observable selectedProducts$ because we want the product detail to display the category string
+  // we start with productsWithCategory$ observable
+  selectedProducts$ = this.productsWithCategory$
+  .pipe(
+    // then we map the array of products
+    // we use the array find method to find the product with the selected product ID (HARD CODED the Id of 5)
+    map(products => products.find(product => product.id === 5)),
+    // we add tap for debugging
+    tap(product => console.log('selectedProduct', product))
+  );
+
   constructor(private http: HttpClient,
     private productCategoryService: ProductCategoryService
     ) { }
