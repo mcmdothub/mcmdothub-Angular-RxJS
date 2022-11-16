@@ -7,10 +7,15 @@
     <div class="container">
       <div class="row justify-content-between">
         <div class="col-3">
+          <!-- Already bound to the drop-down change event which calls the onSelected method in our component,passing in the selected value -->
           <select class="form-control"
                   (change)="onSelected($any($event.target).value)">
             <option value="0">- Display All -</option>
-            <option *ngFor="let category of categories"
+            <!-- <option *ngFor="let category of categories"
+                    [value]="category.id">{{ category.name }}</option> -->
+            <!-- Change the option element to bind to our categories$ observable using the async pipe.
+            We don't need the as clause because we aren't referencing the categories anywhere else but here -->
+            <option *ngFor="let category of categories$ | async"
                     [value]="category.id">{{ category.name }}</option>
           </select>
         </div>
@@ -31,8 +36,11 @@
       <!-- this automatically subcribes for us and handles unsubscribing -->
       <!-- So: products$ is the observable and products is the array of products
       emited from that observable -->
+      <!-- <table class="table mb-0"
+             *ngIf="products$ | async as products"> -->
+      <!-- we bind to the filter productsSimpleFilter -->
       <table class="table mb-0"
-             *ngIf="products$ | async as products">
+             *ngIf="productsSimpleFilter$ | async as products">
         <thead>
           <tr>
             <th>Product</th>

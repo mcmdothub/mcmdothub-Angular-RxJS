@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
-import { catchError, EMPTY, Observable, of } from 'rxjs';
+import { catchError, EMPTY, filter, map, Observable, of } from 'rxjs';
 import { ProductCategory } from '../product-categories/product-category';
+import { ProductCategoryService } from '../product-categories/product-category.service';
 
 import { Product } from './product';
 import { ProductService } from './product.service';
@@ -14,7 +15,12 @@ import { ProductService } from './product.service';
 export class ProductListComponent {
   pageTitle = 'Product List';
   errorMessage = '';
-  categories: ProductCategory[] = [];
+
+  //local categories property
+  //categories: ProductCategory[] = [];
+
+  // hardcode a default category selection
+  selectedCategoryId = 1;
 
   //products: Product[] = [];
   // Implement Async Pipe
@@ -40,10 +46,37 @@ export class ProductListComponent {
       })
     );
 
+  // property for the product category data stream
+  // we assign it to the productCategories Observable defined in the productCategoryService & include exception handling
+  categories$ = this.productCategoryService.productCategories$
+    .pipe(
+      catchError(err => {
+        this.errorMessage = err;
+        return EMPTY;
+      })
+    );
+
+  // new Observable for our filtered list
+  productsSimpleFilter$ = this.productService.productsWithCategory$
+    .pipe(
+      // map operator to map the emitted array
+      map(products =>
+        // use the array's filter method to filter the elements in this array
+        // returns only those products with the selected category ID
+        products.filter(product =>
+          // if ? there is a selectedCategoryId we check the product.categoryId against the selectedCategoryId
+          // otherwise there is no selectedCategoryId  we return true to select all products
+          this.selectedCategoryId ? product.categoryId === this.selectedCategoryId : true
+          )
+        )
+    );
+
 
   //sub!: Subscription;
 
-  constructor(private productService: ProductService) { }
+  // inject productService & productCategoryService
+  constructor(private productService: ProductService,
+    private productCategoryService: ProductCategoryService) { }
 
   // After using Declarative Pattern for Data Retrieval we dont need ngOnInit anymore
   //ngOnInit(): void {
@@ -80,6 +113,9 @@ export class ProductListComponent {
   }
 
   onSelected(categoryId: string): void {
-    console.log('Not yet implemented');
+    // we set the selectedCategoryId to the ID that user selected
+    // we use + to cast it to a number.The + is required or "===" in the filter function won't match our value
+    this.selectedCategoryId = + categoryId;
+    console.log('Product-category.service => onSelected method:', this.selectedCategoryId);
   }
 }

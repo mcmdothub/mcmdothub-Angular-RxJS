@@ -10,6 +10,8 @@ import { ProductCategory } from './product-category';
 export class ProductCategoryService {
   private productCategoriesUrl = 'api/productCategories';
 
+  // populate the category drop-down
+  // productCategories$ observable that emits the array of product categories (we use this to bind to the drop-down)
   productCategories$ = this.http.get<ProductCategory[]>(this.productCategoriesUrl)
   .pipe(
     tap(data => console.log('categories', JSON.stringify(data))),
